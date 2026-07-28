@@ -3,8 +3,26 @@
 [![License](https://img.shields.io/github/license/deutsche-nationalbibliothek/dvrf-rs?color=blue)](./LICENSE)
 
 
-This project provides a library for reading and writing the [Data
-Validation Report Format (DVRF)] for the Rust programming language.
+This project provides a library for processing the [Data Validation
+Report Format (DVRF)] in the Rust programming language. In addition
+to the library, it also provides the `dvrf` tool, which offers useful
+commands for analysis and further processing.
+
+## Demo
+
+```console
+$ dvrf concat --pretty tests/data/errors.json
+[
+  {
+    "message": "Unexpected end of JSON input at character 8",
+    "position": {
+      "char": "8",
+      "line": "1"
+    }
+  }
+]
+```
+
 
 ## Contributing
 
