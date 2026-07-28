@@ -3,4 +3,10 @@ name = "dvrf-rs"
 version = "0.1.0"
 edition = "2024"
 
+authors = ["Nico Wagner <n.wagner@dnb.de>"]
+repository = "https://github.com/deutsche-nationalbibliothek/dvrf-rs"
+categories = ["parser-implementations"]
+keywords = ["code4lib"]
+license = "EUPL-1.2"
+
 [dependencies]
