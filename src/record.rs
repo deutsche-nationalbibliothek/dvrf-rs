@@ -23,7 +23,7 @@ impl Record {
         Self::default()
     }
 
-    pub fn with_message<S>(&mut self, message: S) -> &mut Self
+    pub fn with_message<S>(mut self, message: S) -> Self
     where
         S: AsRef<str>,
     {
@@ -31,7 +31,7 @@ impl Record {
         self
     }
 
-    pub fn with_type<S>(&mut self, r#type: S) -> &mut Self
+    pub fn with_type<S>(mut self, r#type: S) -> Self
     where
         S: AsRef<str>,
     {
@@ -39,7 +39,7 @@ impl Record {
         self
     }
 
-    pub fn with_level<L>(&mut self, level: L) -> &mut Self
+    pub fn with_level<L>(mut self, level: L) -> Self
     where
         L: Into<Level>,
     {
