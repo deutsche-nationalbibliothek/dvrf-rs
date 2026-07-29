@@ -27,7 +27,10 @@ impl Record {
     where
         S: AsRef<str>,
     {
-        self.message = Some(message.as_ref().to_string());
+        let message = message.as_ref();
+        if !message.is_empty() {
+            self.message = Some(message.to_string());
+        }
         self
     }
 
