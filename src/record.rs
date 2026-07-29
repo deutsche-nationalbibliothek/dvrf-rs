@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{Level, Position};
+use crate::{Level, Locator, LocatorMap, Position};
 
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -47,6 +47,31 @@ impl Record {
         L: Into<Level>,
     {
         self.level = Some(level.into());
+        self
+    }
+
+    pub fn with_position<S>(mut self, dimension: S, address: S) -> Self
+    where
+        S: AsRef<str>,
+    {
+        let dimension = dimension.as_ref().to_string();
+        let address = address.as_ref().to_string();
+
+        if self.position.is_none() {
+            self.position =
+                Some(Position::Condensed(LocatorMap::default()));
+        }
+
+        match self.position {
+            Some(Position::Condensed(ref mut map)) => {
+                map.insert(dimension, address);
+            }
+            Some(Position::Expanded(ref mut locators)) => {
+                locators.push(Locator { dimension, address });
+            }
+            _ => unreachable!(),
+        }
+
         self
     }
 }

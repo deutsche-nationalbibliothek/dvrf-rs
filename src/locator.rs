@@ -22,12 +22,26 @@ impl DerefMut for LocatorMap {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Locator {
-    dimension: String,
-    address: String,
+    pub(crate) dimension: String,
+    pub(crate) address: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Locators(Vec<Locator>);
+
+impl Deref for Locators {
+    type Target = Vec<Locator>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Locators {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
 
 impl From<LocatorMap> for Locators {
     fn from(map: LocatorMap) -> Self {
