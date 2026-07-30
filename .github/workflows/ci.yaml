@@ -49,6 +49,22 @@ jobs:
         run: |
           cargo nextest run --target ${{ matrix.target.triple }} --workspace --all-features --no-fail-fast
           cargo test --target ${{ matrix.target.triple }} --doc --workspace --all-features --no-fail-fast
+
+  rustfmt:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: nightly
+          components: rustfmt
+      - run: |
+          cargo fmt --all --check
     
 
 
