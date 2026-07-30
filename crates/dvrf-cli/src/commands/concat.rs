@@ -9,7 +9,7 @@ use crate::utils::WriterBuilder;
 #[derive(Debug, clap::Parser)]
 #[clap(visible_alias = "cat")]
 pub(crate) struct Concat {
-    /// Wheter to write the output as pretty-printed JSON or not.
+    /// Whether to write the output as pretty-printed JSON or not.
     #[arg(long)]
     pretty: bool,
 
