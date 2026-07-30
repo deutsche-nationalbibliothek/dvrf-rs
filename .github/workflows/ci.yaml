@@ -1,0 +1,54 @@
+name: ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [ "main" ]
+  schedule:
+    - cron: '0 4 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ${{ matrix.target.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - { os: macos-latest, toolchain: stable, triple: x86_64-apple-darwin }
+          - { os: ubuntu-latest, toolchain: beta, triple: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-latest, toolchain: nightly, triple: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-latest, toolchain: stable, triple: x86_64-unknown-linux-gnu }
+          - { os: windows-latest, toolchain: stable, triple: i686-pc-windows-msvc }
+          - { os: windows-latest, toolchain: stable, triple: x86_64-pc-windows-msvc }
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: ${{ matrix.target.toolchain }}
+          targets: ${{ matrix.target.triple }}
+      - name: Install nextest
+        uses: taiki-e/install-action@2ca9b94c269419b7b0c711c09d0b21c4e1d51145 # v2.83.1
+        with:
+          tool: nextest
+      - name: Run tests
+        run: |
+          cargo nextest run --target ${{ matrix.target.triple }} --workspace --all-features --no-fail-fast
+          cargo test --target ${{ matrix.target.triple }} --doc --workspace --all-features --no-fail-fast
+    
+
+
