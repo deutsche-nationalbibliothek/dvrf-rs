@@ -8,12 +8,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::{Error, Record};
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Document(Vec<Record>);
 
 impl Document {
     pub fn new() -> Self {
-        Self(vec![])
+        Self::default()
     }
 
     pub fn write_record(&mut self, record: Record) {

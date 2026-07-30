@@ -16,7 +16,7 @@ pub(crate) struct Concat {
     #[arg(default_value = "-", hide_default_value = true)]
     path: Vec<PathBuf>,
 
-    /// Write output to <filename> instead of stdout.
+    /// Write output to \<filename\> instead of stdout.
     #[arg(short, long, value_name = "filename")]
     output: Option<PathBuf>,
 }
