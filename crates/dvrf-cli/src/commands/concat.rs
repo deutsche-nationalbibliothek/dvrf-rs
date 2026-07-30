@@ -9,14 +9,14 @@ use crate::utils::WriterBuilder;
 #[derive(Debug, clap::Parser)]
 #[clap(visible_alias = "cat")]
 pub(crate) struct Concat {
-    /// Wheter to write the output as pretty-printed JSON or not.
+    /// Whether to write the output as pretty-printed JSON or not.
     #[arg(long)]
     pretty: bool,
 
     #[arg(default_value = "-", hide_default_value = true)]
     path: Vec<PathBuf>,
 
-    /// Write output to <filename> instead of stdout.
+    /// Write output to \<filename\> instead of stdout.
     #[arg(short, long, value_name = "filename")]
     output: Option<PathBuf>,
 }

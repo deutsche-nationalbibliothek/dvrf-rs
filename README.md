@@ -1,5 +1,6 @@
 # dvrf-rs
 
+[![CI](https://github.com/deutsche-nationalbibliothek/dvrf-rs/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/deutsche-nationalbibliothek/dvrf-rs/actions/workflows/ci.yaml)
 [![License](https://img.shields.io/github/license/deutsche-nationalbibliothek/dvrf-rs?color=blue)](./LICENSE)
 
 This project provides a library for processing the [Data Validation

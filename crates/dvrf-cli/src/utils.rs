@@ -27,6 +27,7 @@ impl WriterBuilder {
             let file = OpenOptions::new()
                 .write(true)
                 .create(true)
+                .truncate(true)
                 .open(path)?;
 
             Ok(Writer::File(BufWriter::new(Box::new(file))))
