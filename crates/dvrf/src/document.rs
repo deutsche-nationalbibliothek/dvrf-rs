@@ -104,6 +104,26 @@ impl Document {
         Ok(serde_json::from_reader(rdr)?)
     }
 
+    /// Reads the document from the given byte slice
+    ///
+    /// If the filename ends with the suffix `.gz` the file is
+    /// automatically decompressed.)
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use dvrf::Document;
+    ///
+    /// let doc = Document::from_bytes(b"[{\"message\":\"foo\"}]")?;
+    /// assert_eq!(doc.records().count(), 1);
+    ///
+    /// # Ok::<(), Box<dyn std::error::Error>>(())
+    /// ```
+    #[inline]
+    pub fn from_bytes<B: AsRef<[u8]>>(bytes: B) -> Result<Self, Error> {
+        Ok(serde_json::from_slice(bytes.as_ref())?)
+    }
+
     /// Writes the document into the given writer.
     ///
     /// If the pretty flag is set the document is serialized as
