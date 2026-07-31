@@ -1,6 +1,9 @@
 # dvrf-rs
 
 [![CI](https://github.com/deutsche-nationalbibliothek/dvrf-rs/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/deutsche-nationalbibliothek/dvrf-rs/actions/workflows/ci.yaml)
+[![Crates.io Version](https://img.shields.io/crates/v/dvrf)](https://crates.io/crates/dvrf)
+[![docs.rs](https://img.shields.io/docsrs/dvrf)](https://docs.rs/dvrf/latest/dvrf/)
+[![dependency status](https://deps.rs/crate/dvrf/latest/status.svg)](https://deps.rs/crate/dvrf/latest)
 [![License](https://img.shields.io/github/license/deutsche-nationalbibliothek/dvrf-rs?color=blue)](./LICENSE)
 
 This project provides a library for processing the [Data Validation
