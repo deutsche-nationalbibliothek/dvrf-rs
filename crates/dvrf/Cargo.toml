@@ -1,5 +1,6 @@
 [package]
 name = "dvrf"
+description = "A library to read and write the Data Validation Report Format (DVRF)."
 categories = ["parser-implementations"]
 keywords = ["code4lib"]
 
