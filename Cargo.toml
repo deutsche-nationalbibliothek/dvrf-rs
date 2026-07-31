@@ -1,14 +1,12 @@
 [workspace]
 resolver = "3"
 default-members = ["crates/dvrf-cli"]
-members = [
-  "crates/dvrf-cli",
-  "crates/dvrf"
-]
+members = ["crates/dvrf-cli", "crates/dvrf"]
 
 [workspace.package]
 authors = ["Nico Wagner <n.wagner@dnb.de>"]
 repository = "https://github.com/deutsche-nationalbibliothek/dvrf-rs"
+readme = "README.md"
 license = "EUPL-1.2"
 rust-version = "1.85"
 edition = "2024"
@@ -24,5 +22,3 @@ flate2 = { version = "1.1.9" }
 predicates = { version = "3.1.4" }
 serde_json = { version = "1.0.151" }
 serde = { version = "1.0.229", features = ["derive"] }
-
-
