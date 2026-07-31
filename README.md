@@ -39,6 +39,6 @@ are welcome to communicate in your native language.
 This project is licensed under the [European Union Public License 1.2].
 
 
-[Data Validation Report Format (DVRF)]: https://zenodo.org/records/20792191
+[Data Validation Report Format (DVRF)]: https://gbv.github.io/data-validation-report-format/
 [DCO]: https://developercertificate.org
 [European Union Public License 1.2]: ./LICENSE
