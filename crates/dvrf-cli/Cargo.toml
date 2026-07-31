@@ -9,7 +9,21 @@ repository.workspace = true
 rust-version.workspace = true
 version.workspace = true
 
+[[bin]]
+path = "src/main.rs"
+name = "dvrf"
+
+[[test]]
+path = "tests/e2e/lib.rs"
+name = "e2e"
+
 [dependencies]
 clap = { workspace = true, features = ["derive", "env"] }
 dvrf = { workspace = true }
 flate2 = { workspace = true }
+
+[dev-dependencies]
+anyhow = { workspace = true }
+assert_cmd = { workspace = true }
+assert_fs = { workspace = true }
+predicates = { workspace = true }
