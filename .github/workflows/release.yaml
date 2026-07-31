@@ -1,0 +1,163 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  prepare:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ env.VERSION }}
+      tag: ${{ env.TAG}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Get release version from Git tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          tag="${TAG}"
+          version=${tag#v}
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "TAG=$tag" >> $GITHUB_ENV
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$TAG" --verify-tag --draft --generate-notes --title "dvrf $VERSION"
+
+  releases:
+    permissions:
+      contents: write
+      attestations: write
+      artifact-metadata: write
+      id-token: write
+    needs: prepare
+    runs-on: ${{ matrix.target.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - { os: macos-latest, toolchain: stable, triple: x86_64-apple-darwin }
+          - { os: ubuntu-latest, toolchain: stable, triple: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-latest, toolchain: stable, triple: x86_64-unknown-linux-musl }
+          - { os: windows-latest, toolchain: stable, triple: x86_64-pc-windows-msvc }
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+        with:
+          toolchain: ${{ matrix.target.toolchain }}
+          targets: ${{ matrix.target.triple }}
+
+      - name: Build release binary
+        if: ${{ matrix.target.triple != 'x86_64-unknown-linux-musl' }}
+        shell: bash
+        run: |
+          cargo build -p dvrf-cli --release
+          if [ "${{ matrix.target.os }}" = "windows-latest" ]; then
+            echo "BINARY=target/release/dvrf.exe" >> $GITHUB_ENV
+          else
+            echo "BINARY=target/release/dvrf" >> $GITHUB_ENV
+          fi
+
+      - name: Build release binary (musl)
+        if: ${{ matrix.target.triple == 'x86_64-unknown-linux-musl' }}
+        run: |
+          sudo apt-get install -y musl-tools
+          cargo build -p dvrf-cli --release --target=x86_64-unknown-linux-musl
+          echo "BINARY=target/x86_64-unknown-linux-musl/release/dvrf" >> $GITHUB_ENV
+
+      - name: Run release tests
+        run: |
+          cargo test -p dvrf-cli --release
+          cargo test -p dvrf --release
+
+      - name: Strip release binary
+        shell: bash
+        if: matrix.target.os == 'macos-latest'
+        run: |
+          strip "$BINARY"
+
+      - name: Prepare archive
+        shell: bash
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+          TRIPLE: ${{ matrix.target.triple }}
+        run: |
+          version="${VERSION}"
+          triple="${TRIPLE}"
+          ARCHIVE="dvrf-$version-$triple"
+          echo "ARCHIVE=$ARCHIVE" >> $GITHUB_ENV
+          mkdir -p "$ARCHIVE"/
+          cp "$BINARY" "$ARCHIVE"/
+          cp "README.md" "$ARCHIVE"/
+          cp "LICENSE" "$ARCHIVE"/
+
+      - name: Build Archive (Unix)
+        if: ${{ matrix.target.os != 'windows-latest' }}
+        shell: bash
+        run: |
+          tar czf "$ARCHIVE.tar.gz" "$ARCHIVE"
+            echo "ASSET=$ARCHIVE.tar.gz" >> $GITHUB_ENV
+
+      - name: Build Archive (Windows)
+        if: ${{ matrix.target.os == 'windows-latest' }}
+        shell: bash
+        run: |
+          7z a "$ARCHIVE.zip" "$ARCHIVE"
+          echo "ASSET=$ARCHIVE.zip" >> $GITHUB_ENV
+
+      - name: Generate artifact attestations
+        uses: actions/attest@508db95dd578ae2727ebd6217d5ba78e4fbda05d # v4.2.1
+        with:
+          subject-path: '${{ github.workspace }}/${{ env.ASSET }}'
+
+      - name: Upload assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.prepare.outputs.tag }}
+        shell: bash
+        run: |
+          gh release upload "${TAG}" "${ASSET}"
+
+  conclusion:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+      - releases
+    steps:
+      - name: Check for cancelled jobs
+        if: ${{ contains(needs.*.result, 'cancelled') }}
+        run: |
+          exit 1
+      - name: Check for failed jobs
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: |
+          exit 1
+      - name: Finish job
+        run: |
+          exit 0
