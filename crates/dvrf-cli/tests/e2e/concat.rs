@@ -65,3 +65,38 @@ fn concat_pretty_output() -> TestResult {
 
     Ok(())
 }
+
+#[test]
+fn concat_keep_empty() -> TestResult {
+    let mut cmd = dvrf_cmd();
+    let assert = cmd
+        .arg("concat")
+        .arg(data_dir().join("example3.json"))
+        .assert();
+
+    let doc = Document::from_bytes(&assert.get_output().stdout)?;
+    assert_eq!(doc.records().count(), 1);
+
+    assert
+        .success()
+        .code(0)
+        .stdout(predicates::str::is_empty().not())
+        .stderr(predicates::str::is_empty());
+
+    let mut cmd = dvrf_cmd();
+    let assert = cmd
+        .args(["concat", "--keep-empty"])
+        .arg(data_dir().join("example3.json"))
+        .assert();
+
+    let doc = Document::from_bytes(&assert.get_output().stdout)?;
+    assert_eq!(doc.records().count(), 2);
+
+    assert
+        .success()
+        .code(0)
+        .stdout(predicates::str::is_empty().not())
+        .stderr(predicates::str::is_empty());
+
+    Ok(())
+}
