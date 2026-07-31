@@ -42,7 +42,7 @@ jobs:
           toolchain: ${{ matrix.target.toolchain }}
           targets: ${{ matrix.target.triple }}
       - name: Install nextest
-        uses: taiki-e/install-action@2ca9b94c269419b7b0c711c09d0b21c4e1d51145 # v2.83.1
+        uses: taiki-e/install-action@7572810d7dd469b651bb7793945692cf78da5dd7 # v2.85.0
         with:
           tool: nextest
       - name: Run tests
