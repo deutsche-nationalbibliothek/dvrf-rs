@@ -13,6 +13,10 @@ pub(crate) struct Concat {
     #[arg(long)]
     pretty: bool,
 
+    /// Whether to keep empty records or not.
+    #[arg(long)]
+    keep_empty: bool,
+
     #[arg(default_value = "-", hide_default_value = true)]
     path: Vec<PathBuf>,
 
@@ -23,19 +27,26 @@ pub(crate) struct Concat {
 
 impl Concat {
     pub(crate) fn execute(self) -> CliResult {
-        let mut output = Document::new();
+        let mut doc = Document::new();
         let mut wtr = WriterBuilder::default()
             .try_from_path_or_stdout(self.output)?;
 
         for path in self.path {
             let document = Document::from_path(path)?;
             for record in document.records() {
-                output.write_record(record.clone());
+                doc.write_record(record.clone());
             }
         }
 
-        output.write_to(&mut wtr, self.pretty)?;
+        // Unless empty records are explicitly kept using the
+        // `--keep-empty` option, they will be removed.
+        if !self.keep_empty {
+            doc.retain(|record| !record.is_empty());
+        }
+
+        doc.write_to(&mut wtr, self.pretty)?;
         wtr.finish()?;
+
         Ok(())
     }
 }

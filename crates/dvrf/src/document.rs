@@ -124,6 +124,29 @@ impl Document {
         Ok(serde_json::from_slice(bytes.as_ref())?)
     }
 
+    /// Retain only records specified by the predicate
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use dvrf::{Document, Record};
+    ///
+    /// let mut doc = Document::new();
+    /// doc.write_record(Record::new().with_message("foo"));
+    /// doc.write_record(Record::new());
+    /// assert_eq!(doc.records().count(), 2);
+    ///
+    /// /// keep only non-empty records
+    /// doc.retain(|record| !record.is_empty());
+    /// assert_eq!(doc.records().count(), 1);
+    ///
+    /// # Ok::<(), Box<dyn std::error::Error>>(())
+    /// ```
+    #[inline]
+    pub fn retain<F: FnMut(&Record) -> bool>(&mut self, predicate: F) {
+        self.0.retain(predicate);
+    }
+
     /// Writes the document into the given writer.
     ///
     /// If the pretty flag is set the document is serialized as
