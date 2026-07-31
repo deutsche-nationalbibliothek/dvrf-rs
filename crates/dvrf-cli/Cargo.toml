@@ -1,5 +1,6 @@
 [package]
 name = "dvrf-cli"
+description = "A command-line tool to process DVRF (Data Validation Report Format) files."
 categories = ["command-line-utilities"]
 keywords = ["code4lib"]
 
